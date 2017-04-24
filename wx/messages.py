@@ -9,7 +9,7 @@ class ReceiveMessage(object):
         self.__find(["ToUserName", "FromUserName", "CreateTime", "MsgType", "MsgId"], xml_data)
         getattr(self, self.MsgType)(xml_data)
 
-    def test(self, xml_data):
+    def text(self, xml_data):
         self.__find("Content", xml_data)
 
     def image(self, xml_data):
