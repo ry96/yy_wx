@@ -48,3 +48,4 @@ class WXClient(object):
             else:
                 raise Exception(res)
         return self.__access_token
+

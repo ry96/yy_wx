@@ -15,6 +15,21 @@ class ReceiveMessage(object):
     def image(self, xml_data):
         self.__find(["PicUrl", "MediaId"], xml_data)
 
+    def voice(self, xml_data):
+        self.__find(['MediaId', 'Format'], xml_data)
+
+    def video(self, xml_data):
+        self.__find(['MediaId', 'ThumbMediaId'], xml_data)
+
+    def shortvideo(self, xml_data):
+        self.video(xml_data)
+
+    def location(self, xml_data):
+        self.__find(['Location_X', 'Location_Y', 'Scale', 'Label'], xml_data)
+
+    def link(self, xml_data):
+        self.__find(['Title', 'Description', 'Url'], xml_data)
+
     def event(self, xml_data):
         self.__find(["Event", "EventKey"], xml_data, is_lower=True)
         getattr(self, self.Event)(xml_data)
