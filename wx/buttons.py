@@ -46,7 +46,7 @@ class ViewButton(ButtonBase):
 class MiniProgramButton(ButtonBase):
 
     def __init__(self, name, app_id, url, page_path):
-        super(MiniProgramButton, self).__init__(name, 'minprogram')
+        super(MiniProgramButton, self).__init__(name, 'miniprogram')
         self.appid = app_id
         self.url = url
         self.pagepath = page_path

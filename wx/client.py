@@ -1,5 +1,7 @@
+# coding=utf-8
 import requests
 import time
+import json
 
 
 class WXClient(object):
@@ -15,7 +17,9 @@ class WXClient(object):
         self.__update_access_token()
         url = self.__url.format("menu/create?access_token={0}".format(self.__access_token))
         data = {'button': map(lambda b: b.__dict__, buttons) if isinstance(buttons, list) else [buttons.__dict__]}
-        return self.session.post(url, json=data).json() == {"errcode": 0, "errmsg": "ok"}
+        data = json.dumps(data, ensure_ascii=False)
+        res = self.session.post(url, data=data.encode("utf-8")).json()
+        return res == {"errcode": 0, "errmsg": "ok"}
 
     def get_buttons(self):
         self.__update_access_token()
