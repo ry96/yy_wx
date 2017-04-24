@@ -55,11 +55,12 @@ class ReceiveMessage(object):
         if isinstance(keys, str):
             keys = [keys]
         for key in keys:
-            value = xml_data.find(key).text
-            if value:
+            element = xml_data.find(key)
+            if element is not None:
+                value = element.text
                 value = value.lower() if is_lower else value
                 value = value.encode('utf-8')
-            setattr(self, key, value)
+           	setattr(self, key, value)
 
 
 REPLAY_MESSAGE = """

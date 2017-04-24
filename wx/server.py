@@ -11,10 +11,10 @@ app = Flask(__name__)
 
 @app.route('/wx', methods=['GET'])
 def check_echostr():
-    signature = request.args.get('signature')
-    timestamp = request.args.get('timestamp')
-    nonce = request.args.get('nonce')
-    echostr = request.args.get('echostr')
+    signature = request.args.get('signature', '')
+    timestamp = request.args.get('timestamp', '')
+    nonce = request.args.get('nonce', '')
+    echostr = request.args.get('echostr', '')
 
     args = ["ry96", timestamp, nonce]
     args.sort()
@@ -26,14 +26,16 @@ def check_echostr():
 
 @app.route('/wx', methods=['POST'])
 def receive_message():
+    res = "success"
     message = ReceiveMessage(request.data)
     if message.MsgType == 'text':
-        return ReplayTextMessage(message.ToUserName, message.FromUserName, "test")
+        res = ReplayTextMessage(message.FromUserName, message.ToUserName, "test").send()
     elif message.MsgType == 'image':
-        return ReplayImageMessage(message.ToUserName, message.FromUserName, message.MediaId)
+        res = ReplayImageMessage(message.FromUserName, message.ToUserName, message.MediaId).send()
     else:
-        print message
-        return "success"
+        print message.__dict__
+        res = ReplayTextMessage(message.FromUserName, message.ToUserName, "received message").send()
+    return res
 
 
 if __name__ == '__main__':
