@@ -32,22 +32,22 @@ class ReceiveMessage(object):
 
     def event(self, xml_data):
         self.__find(["Event", "EventKey"], xml_data, is_lower=True)
-        getattr(self, self.Event)(xml_data)
+        getattr(self, "event_" + self.Event)(xml_data)
 
-    def click(self, xml_data):
+    def event_click(self, xml_data):
         pass
 
-    def view(self, xml_data):
+    def event_view(self, xml_data):
         self.__find("MenuId", xml_data)
 
-    def scancode_push(self, xml_data):
+    def event_scancode_push(self, xml_data):
         scan_code_info = xml_data.find("ScanCodeInfo")
         self.__find(["ScanType", "ScanResult"], scan_code_info)
 
-    def scancode_waitmsg(self, xml_data):
+    def event_scancode_waitmsg(self, xml_data):
         self.scancode_push(xml_data)
 
-    def pic_sysphoto(self, xml_data):
+    def event_pic_sysphoto(self, xml_data):
         send_pics_info = xml_data.find("SendPicsInfo")
         self.__find("Count", send_pics_info)
         pic_list = send_pics_info.find("PicList")
@@ -56,15 +56,27 @@ class ReceiveMessage(object):
             pics.append(item.find("PicMd5Sum").text)
         setattr(self, "PicList", pics)
 
-    def pic_photo_or_album(self, xml_data):
+    def event_pic_photo_or_album(self, xml_data):
         self.pic_sysphoto(xml_data)
 
-    def pic_weixin(self, xml_data):
+    def event_pic_weixin(self, xml_data):
         self.pic_sysphoto(xml_data)
 
-    def location_select(self, xml_data):
+    def event_location_select(self, xml_data):
         location_info = xml_data.find("SendLocationInfo")
         self.__find(["Location_X", "Location_Y", "Scale", "Label", "Poiname"], location_info)
+
+    def event_subscribe(self, xml_data):
+        self.__find("Ticket", xml_data)
+
+    def event_unsubscribe(self, xml_data):
+        pass
+
+    def event_scan(self, xml_data):
+        self.__find('Ticket', xml_data)
+
+    def event_location(self, xml_data):
+        self.__find(['Latitude', 'Longitude', 'Precision'], xml_data)
 
     def __find(self, keys, xml_data, is_lower=False):
         if isinstance(keys, str):
@@ -114,3 +126,57 @@ class ReplayImageMessage(ReplayMessage):
     def send(self):
         return self.message.format("<Image><MediaId><![CDATA[{0}]]></MediaId></Image>").format(self.media_id)
 
+
+class ReplayVoiceMessage(ReplayMessage):
+    def __init__(self, to_user_name, from_user_name, media_id):
+        super(ReplayImageMessage, self).__init__('voice', to_user_name, from_user_name)
+        self.media_id = media_id
+
+    def send(self):
+        return self.message.format("<Voice><MediaId><![CDATA[{0}]]></MediaId></Voice>").format(self.media_id)
+
+
+class ReplayVideoMessage(ReplayMessage):
+    def __init__(self, to_user_name, from_user_name, media_id, title, description):
+        super(ReplayImageMessage, self).__init__('video', to_user_name, from_user_name)
+        self.media_id = media_id
+        self.title = title
+        self.description = description
+
+    def send(self):
+        return self.message.format("<Video><MediaId><![CDATA[{0}]]></MediaId><Title><![CDATA[{1}]]></Title><Description><![CDATA[{2}]]></Description></Video>")\
+            .format(self.media_id, self.title, self.description)
+
+
+class ReplayMusicMessage(ReplayMessage):
+    def __init__(self, to_user_name, from_user_name, title, description, music_url, HQ_music_url, thumb_media_id):
+        super(ReplayImageMessage, self).__init__('music', to_user_name, from_user_name)
+        self.title = title
+        self.description = description
+        self.music_url = music_url
+        self.HQ_music_url = HQ_music_url
+        self.thumb_media_id = thumb_media_id
+
+    def send(self):
+        return self.message.format("<Music><Title><![CDATA[{0}]]></Title><Description><![CDATA[{1}]]></Description><MusicUrl><![CDATA[{2}]]></MusicUrl><HQMusicUrl><![CDATA[{3}]]></HQMusicUrl><ThumbMediaId><![CDATA[{4}]]></ThumbMediaId></Music>")\
+            .format(self.title, self.description, self.music_url, self.HQ_music_url, self.thumb_media_id)
+
+
+class ReplayNewsMessage(ReplayMessage):
+    def __init__(self, to_user_name, from_user_name, items):
+        assert isinstance(items, list)
+        super(ReplayImageMessage, self).__init__('news', to_user_name, from_user_name)
+        self.items = items
+
+    def send(self):
+        items_xml = ""
+        for item in self.items:
+            items_xml += """
+                        <item>
+                        <Title><![CDATA[{0}]]></Title> 
+                        <Description><![CDATA[{1}]]></Description>
+                        <PicUrl><![CDATA[{2}]]></PicUrl>
+                        <Url><![CDATA[{3}]]></Url>
+                        </item>
+                    """.format(item.title, item.description, item.pic_url, item.url)
+        return self.message.format("<ArticleCount>{0}</ArticleCount><Articles>{1}</Articles>").format(len(self.items), items_xml)
