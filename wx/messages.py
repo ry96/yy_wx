@@ -129,7 +129,7 @@ class ReplayImageMessage(ReplayMessage):
 
 class ReplayVoiceMessage(ReplayMessage):
     def __init__(self, to_user_name, from_user_name, media_id):
-        super(ReplayImageMessage, self).__init__('voice', to_user_name, from_user_name)
+        super(ReplayVoiceMessage, self).__init__('voice', to_user_name, from_user_name)
         self.media_id = media_id
 
     def send(self):
@@ -138,7 +138,7 @@ class ReplayVoiceMessage(ReplayMessage):
 
 class ReplayVideoMessage(ReplayMessage):
     def __init__(self, to_user_name, from_user_name, media_id, title, description):
-        super(ReplayImageMessage, self).__init__('video', to_user_name, from_user_name)
+        super(ReplayVideoMessage, self).__init__('video', to_user_name, from_user_name)
         self.media_id = media_id
         self.title = title
         self.description = description
@@ -150,7 +150,7 @@ class ReplayVideoMessage(ReplayMessage):
 
 class ReplayMusicMessage(ReplayMessage):
     def __init__(self, to_user_name, from_user_name, title, description, music_url, HQ_music_url, thumb_media_id):
-        super(ReplayImageMessage, self).__init__('music', to_user_name, from_user_name)
+        super(ReplayMusicMessage, self).__init__('music', to_user_name, from_user_name)
         self.title = title
         self.description = description
         self.music_url = music_url
@@ -165,7 +165,7 @@ class ReplayMusicMessage(ReplayMessage):
 class ReplayNewsMessage(ReplayMessage):
     def __init__(self, to_user_name, from_user_name, items):
         assert isinstance(items, list)
-        super(ReplayImageMessage, self).__init__('news', to_user_name, from_user_name)
+        super(ReplayNewsMessage, self).__init__('news', to_user_name, from_user_name)
         self.items = items
 
     def send(self):
