@@ -178,5 +178,5 @@ class ReplayNewsMessage(ReplayMessage):
                         <PicUrl><![CDATA[{2}]]></PicUrl>
                         <Url><![CDATA[{3}]]></Url>
                         </item>
-                    """.format(item.title, item.description, item.pic_url, item.url)
+                    """.format(item.get('title',''), item.get('description',''), item.get('pic_url',''), item.get('url',''))
         return self.message.format("<ArticleCount>{0}</ArticleCount><Articles>{1}</Articles>").format(len(self.items), items_xml)
