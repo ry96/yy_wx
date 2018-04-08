@@ -1,2 +1,2 @@
 # yy_wx
-hello world
+hello world test push event
